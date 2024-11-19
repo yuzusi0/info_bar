@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>編集可能なテーブル</title>
+  <style>
+    body {
+      font-size: 1.5em;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      font-size: 2em;
+      text-align: center;
+    }
+    table {
+      width: 30%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      margin: 20px auto;
+    }
+    th, td {
+      border: 0px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+      border-radius: 10px;
+    }
+    th {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    #formContainer {
+      margin: 30px auto;
+      padding: 30px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      width: 60%;
+      font-size: 1.2em;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      margin-right: 15px;
+      font-size: 1.5em;
+    }
+    input[type="text"] {
+      width: 85%;
+      padding: 15px;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 1.5em;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>編集可能なRoom情報テーブル</h1>
+  
+  <table id="roomTable">
+    <thead>
+      <tr id="tableHeader">
+        <th>Room</th>
+        <th>Average MMR</th>
+        <th>Tier</th>
+        <th>Format</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JavaScriptで行を追加します -->
+    </tbody>
+  </table>
+
+  <div id="formContainer">
+    <h2>情報を編集</h2>
+    <label id="label1" for="roomInput">Room:</label>
+    <input type="text" id="roomInput"><br>
+    <label id="label2" for="mmrInput">Average MMR:</label>
+    <input type="text" id="mmrInput"><br>
+    <label id="label3" for="tierInput">Tier:</label>
+    <input type="text" id="tierInput"><br>
+    <label id="label4" for="formatInput">Format:</label>
+    <input type="text" id="formatInput"><br>
+    <button onclick="addOrUpdateRow()">更新</button>
+    <button onclick="editRow()">編集</button>
+    <button onclick="toggleHeaders()">切り替え</button>
+  </div>
+
+  <script>
+    const headers = [
+      { room: "Room", mmr: "Average MMR", tier: "Tier", format: "Format" },
+      { room: "外交mmr", mmr: "味方", tier: "敵", format: "Home/Away" },
+      { room: "大会名", mmr: "ラウンド", tier: "形式", format: "備考" }
+    ];
+
+    let currentHeaderIndex = 0;
+
+    const data = [
+      { room: "Room 8", mmr: "5000", tier: "E", format: "2v2" },
+    ];
+
+    function populateTable() {
+      const tableBody = document.getElementById("roomTable").getElementsByTagName("tbody")[0];
+      tableBody.innerHTML = "";
+
+      data.forEach(item => {
+        const row = document.createElement("tr");
+
+        Object.values(item).forEach(value => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function toggleHeaders() {
+      // ヘッダーを次の種類に切り替える
+      currentHeaderIndex = (currentHeaderIndex + 1) % headers.length;
+      const headerRow = document.getElementById("tableHeader");
+      const currentHeader = headers[currentHeaderIndex];
+
+      // テーブルのヘッダーを更新
+      headerRow.innerHTML = `
+        <th>${currentHeader.room}</th>
+        <th>${currentHeader.mmr}</th>
+        <th>${currentHeader.tier}</th>
+        <th>${currentHeader.format}</th>
+      `;
+
+      // フォームラベルを更新
+      document.getElementById("label1").textContent = `${currentHeader.room}:`;
+      document.getElementById("label2").textContent = `${currentHeader.mmr}:`;
+      document.getElementById("label3").textContent = `${currentHeader.tier}:`;
+      document.getElementById("label4").textContent = `${currentHeader.format}:`;
+    }
+
+    function addOrUpdateRow() {
+      const room = document.getElementById("roomInput").value;
+      const mmr = document.getElementById("mmrInput").value;
+      const tier = document.getElementById("tierInput").value;
+      const format = document.getElementById("formatInput").value;
+
+      const newRowData = { room, mmr, tier, format };
+
+      if (data.length > 0) {
+        data[0] = newRowData;
+      } else {
+        data.push(newRowData);
+      }
+
+      clearForm();
+      populateTable();
+    }
+
+    function editRow() {
+      if (data.length > 0) {
+        const item = data[0];
+        document.getElementById("roomInput").value = item.room;
+        document.getElementById("mmrInput").value = item.mmr;
+        document.getElementById("tierInput").value = item.tier;
+        document.getElementById("formatInput").value = item.format;
+      }
+    }
+
+    function clearForm() {
+      document.getElementById("roomInput").value = "";
+      document.getElementById("mmrInput").value = "";
+      document.getElementById("tierInput").value = "";
+      document.getElementById("formatInput").value = "";
+    }
+
+    populateTable();
+  </script>
+</body>
+</html>
+
